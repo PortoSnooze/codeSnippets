@@ -3,9 +3,12 @@ args=commandArgs(trailingOnly=TRUE)
 
 library("vcfR")
 
+# List of VCF files for R to loop through 
 vcfList<-read.table(args[1], header=F)
+# Require a character vector
 vcfList2<-vcfList[,]
 
+# create three emoty data frames
 df1 = NULL
 df2 = NULL
 df3 = NULL
@@ -24,17 +27,17 @@ sdMQ<-round(sd(chrom@var.info$MQ),0)
 minMQ<-round(min(chrom@var.info$MQ),0)
 maxMQ<-round(max(chrom@var.info$MQ),0)
 chromNum<-chrom@vcf@fix[1,1]
-# append results to data frame 
+# append results to data frame (df1)
 df1<-rbind(df1, data.frame(chromNum,meanMQ,sdMQ,minMQ,maxMQ))
 
-# get descriptive stats for MQ
+# MQ
 meanDP<-round(mean(chrom@var.info$DP),0)
 sdDP<-round(sd(chrom@var.info$DP),0)
 minDP<-round(min(chrom@var.info$DP),0)
 maxDP<-round(max(chrom@var.info$DP),0)
 df2 <- rbind(df2, data.frame(meanDP,sdDP,minDP,maxDP))
 
-# get descriptive stats for QUAL
+# QUAL
 quality<-as.numeric(chrom@vcf@fix[,6])
 meanQUAL<-round(mean(quality),0)
 sdQUAL<-round(sd(quality),0)
@@ -44,6 +47,9 @@ df3<-rbind(df3, data.frame(meanQUAL,sdQUAL,minQUAL,maxQUAL))
 }
 
 mergeAll<-cbind(df1,df2,df3)
+
+#write results to file 
+write.table(margeAll,args[2],quotes=F)
 
 
 # Run in Linux using command 
